@@ -8,49 +8,50 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
-export type TestAppConfig = StackProps & {domainName: string};
+export type TestAppConfig = StackProps & {domainName: string, recordName: string};
 
-export class TestAppStack extends Stack {
+export class SiteStack extends Stack {
   constructor(scope: Construct, id: string, props: TestAppConfig) {
     super(scope, id, props);
-    const domainName = props.domainName;
+    const {domainName, recordName} = props;
 
-    const bucket = new Bucket(this, 'TemplateSPABucket', {
+    const bucket = new Bucket(this, 'SPABucket', {
         publicReadAccess: true,
         removalPolicy: RemovalPolicy.DESTROY,
         websiteIndexDocument: 'index.html',
         websiteErrorDocument: 'index.html'
     });
 
-    new BucketDeployment(this, "TemplateSPADeployment", {
+    new BucketDeployment(this, "SPADeployment", {
         sources: [
             Source.asset('./dist/ui')
         ],
         destinationBucket: bucket
     });
 
-    const hostedZone = HostedZone.fromLookup(this, 'TemplateHostedZone', { domainName });
+    const hostedZone = HostedZone.fromLookup(this, 'HostedZone', { domainName });
 
-    const certificate = new DnsValidatedCertificate(this, 'TemplateCert', {
+    const certificate = new DnsValidatedCertificate(this, 'Cert', {
         domainName,
         hostedZone,
         region: 'us-east-1'
     });
 
-    const distribution = new Distribution(this, 'TemplateDistribution', {
+    const distribution = new Distribution(this, 'Distribution', {
         defaultRootObject: 'index.html',
         domainNames: [domainName],
         certificate: certificate,
         defaultBehavior: {
-            cachePolicy: new CachePolicy(this, 'TemplateCacheing', {
+            cachePolicy: new CachePolicy(this, 'Cacheing', {
                 defaultTtl: Duration.minutes(1)
             }),
             origin: new S3Origin(bucket),
         },
     });
 
-    new ARecord(this, 'TemplateARecord', {
+    new ARecord(this, 'ARecord', {
         zone: hostedZone,
+        recordName,
         target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
         ttl: Duration.minutes(1),
     });
