@@ -24,7 +24,7 @@ export class SiteStack extends Stack {
 
     new BucketDeployment(this, "SPADeployment", {
         sources: [
-            Source.asset('./dist/ui')
+            Source.asset('./dist')
         ],
         destinationBucket: bucket
     });
