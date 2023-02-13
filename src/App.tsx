@@ -14,19 +14,28 @@ export default function App() {
     const containerRef = React.useRef<HTMLDivElement>(null!)
     const barContainerRef = React.useRef<HTMLDivElement>(null!)
 
-    const [textStyles, textApi] = useSpring(() => ({
+    const [textStyles1, textApi] = useSpring(() => ({
         y: '100%',
     }));
 
-
+    const [textStyles2, textApi2] = useSpring(() => ({
+        y: '100%',
+    }));
 
     const { scrollYProgress } = useScroll({
         container: containerRef,
         onChange: ({ value: { scrollYProgress } }) => {
-            if (scrollYProgress > 0.01) {
-                textApi.start({ y: '0' })
+            console.log(scrollYProgress);
+            if (scrollYProgress > 0.2) {
+                textApi.start({ y: '0%' })
             } else {
                 textApi.start({ y: '100%' })
+            }
+
+            if (scrollYProgress > 0.40) {
+                textApi2.start({ y: '0%' })
+            } else {
+                textApi2.start({ y: '100%' })
             }
         },
         default: {
@@ -52,7 +61,7 @@ export default function App() {
                                         width: scrollYProgress.to(scrollP => {
                                             const percentilePosition = (i + 1) / X_LINES
 
-                                            return INITIAL_WIDTH / 4 + 40 * Math.cos(((percentilePosition - scrollP) * Math.PI) / 1.5) ** 32
+                                            return INITIAL_WIDTH / 4 + 20 * Math.cos(((percentilePosition - scrollP) * Math.PI) / 1.5) ** 32
                                         }),
                                     }}
                                 />
@@ -69,10 +78,17 @@ export default function App() {
                 >
                     <h1 className={styles.title}>
                         <span>
-                          <animated.span style={textStyles}>Aha!</animated.span>
+                          <animated.span style={textStyles1}>Teddy</animated.span>
                         </span>
                         <span>
-                          <animated.span style={textStyles}>You found me!</animated.span>
+                          <animated.span style={textStyles2}>Boy</animated.span>
+                        </span>
+
+                        <span>
+                          <animated.span style={textStyles1}>Stud Service</animated.span>
+                        </span>
+                        <span>
+                          <animated.span style={textStyles2}>Golden Doodle</animated.span>
                         </span>
                     </h1>
                 </animated.div>
