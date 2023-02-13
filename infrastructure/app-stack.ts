@@ -2,7 +2,7 @@ import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { CachePolicy, Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import {ARecord, HostedZone, RecordTarget} from 'aws-cdk-lib/aws-route53';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
@@ -32,14 +32,14 @@ export class SiteStack extends Stack {
     const hostedZone = HostedZone.fromLookup(this, 'HostedZone', { domainName });
 
     const certificate = new DnsValidatedCertificate(this, 'Cert', {
-        domainName,
+        domainName: recordName,
         hostedZone,
         region: 'us-east-1'
     });
 
     const distribution = new Distribution(this, 'Distribution', {
         defaultRootObject: 'index.html',
-        domainNames: [domainName],
+        domainNames: [recordName],
         certificate: certificate,
         defaultBehavior: {
             cachePolicy: new CachePolicy(this, 'Cacheing', {
